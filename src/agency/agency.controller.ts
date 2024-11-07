@@ -22,4 +22,3 @@ export class AgencyController {
     return this.agencyService.findNearestAgencies(lat, lng);
   }
 }
-

@@ -5,12 +5,12 @@ import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class ItemsService {
-  constructor(protected prisma: PrismaService) { }
+  constructor(protected prisma: PrismaService) {}
 
   async create(createItemDto: CreateItemDto) {
     return await this.prisma.item.create({
-      data: createItemDto
-    })
+      data: createItemDto,
+    });
   }
 
   async findAll() {

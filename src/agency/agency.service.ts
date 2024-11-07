@@ -35,7 +35,7 @@ export class AgencyService {
       );
     }
   }
-  
+
   async findNearestAgencies(userLat: number, userLng: number) {
     try {
       const response = await googleMapsClient.placesNearby({
@@ -77,18 +77,23 @@ export class AgencyService {
             placeId: place.place_id,
             avaliacao: place.rating || 'N/A',
             totalAvaliacoes: place.user_ratings_total || 0,
-            abertoAgora: place.opening_hours ? place.opening_hours.open_now : 'N/A',
+            abertoAgora: place.opening_hours
+              ? place.opening_hours.open_now
+              : 'N/A',
             horarioFuncionamento: placeDetails.opening_hours
               ? placeDetails.opening_hours.weekday_text
               : 'Horários não disponíveis',
           };
-        })
+        }),
       );
 
       return nearestAgencies;
     } catch (error) {
       console.error('Erro ao buscar agências mais próximas:', error);
-      throw new HttpException('Erro ao buscar agências mais próximas.', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        'Erro ao buscar agências mais próximas.',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 }
