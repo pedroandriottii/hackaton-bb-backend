@@ -33,6 +33,7 @@ export class UsersService {
           password: hashedPassword,
           cpf: createUserDto.cpf,
           phone,
+          points: 0,
         },
       });
 

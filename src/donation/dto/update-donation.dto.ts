@@ -1,23 +1,30 @@
-import { IsString, IsInt, IsDate, IsOptional } from 'class-validator';
+import {
+  IsUUID,
+  IsInt,
+  IsBoolean,
+  IsDateString,
+  IsArray,
+  IsOptional,
+} from 'class-validator';
 
 export class UpdateDonationDto {
-  @IsString()
+  @IsUUID()
   @IsOptional()
-  title?: string;
+  userId?: string;
 
   @IsInt()
   @IsOptional()
   totalPoints?: number;
 
-  @IsString()
+  @IsArray()
   @IsOptional()
-  userId?: string;
+  items?: any[]; // Permite array vazio ou com itens adicionais
 
-  @IsString()
-  @IsOptional()
-  location?: string;
-
-  @IsDate()
+  @IsDateString()
   @IsOptional()
   date?: Date;
+
+  @IsBoolean()
+  @IsOptional()
+  isFinished?: boolean;
 }

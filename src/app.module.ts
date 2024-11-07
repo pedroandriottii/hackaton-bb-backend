@@ -5,6 +5,7 @@ import { AuthModule } from './auth/auth.module';
 import { AgencyModule } from './agency/agency.module';
 import { DonationModule } from './donation/donation.module';
 import { PredictModule } from './predict/predict.module';
+import { ItemsModule } from './items/items.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { PredictModule } from './predict/predict.module';
     AgencyModule,
     DonationModule,
     PredictModule,
+    ItemsModule,
   ],
 })
 export class AppModule {}

@@ -1,29 +1,29 @@
 import {
+  IsNotEmpty,
+  IsString,
   IsInt,
   IsOptional,
-  IsString,
   IsUUID,
-  Length,
-  Min,
 } from 'class-validator';
 
 export class CreateItemDto {
+  @IsNotEmpty()
   @IsString()
-  @Length(1, 255)
   title: string;
 
+  @IsNotEmpty()
   @IsString()
-  @Length(1, 1000)
   description: string;
 
+  @IsNotEmpty()
   @IsInt()
-  @Min(0)
   points: number;
-
-  @IsUUID()
-  userId: string;
 
   @IsOptional()
   @IsUUID()
   donationId?: string;
+
+  @IsNotEmpty()
+  @IsInt()
+  weight: number;
 }

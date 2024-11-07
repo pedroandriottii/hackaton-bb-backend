@@ -1,18 +1,6 @@
-import {
-  IsEmail,
-  IsNotEmpty,
-  IsString,
-  IsUUID,
-  Length,
-  IsOptional,
-  IsInt,
-  Min,
-} from 'class-validator';
+import { IsEmail, IsNotEmpty, IsString, Length } from 'class-validator';
 
 export class UserDto {
-  @IsUUID(undefined, { message: 'O ID precisa ser um UUID válido.' })
-  id: string;
-
   @IsEmail(
     {},
     { message: 'O e-mail precisa ser um endereço de e-mail válido.' },
@@ -35,16 +23,4 @@ export class UserDto {
   @IsString({ message: 'A senha deve ser um texto.' })
   @IsNotEmpty({ message: 'A senha é obrigatória.' })
   password: string;
-
-  @IsInt({ message: 'Os pontos devem ser um número inteiro.' })
-  @Min(0, { message: 'Os pontos não podem ser negativos.' })
-  points: number;
-
-  @IsOptional()
-  @IsString({ message: 'O CEP deve ser um texto.' })
-  cep?: string;
-
-  @IsString({ message: 'O role deve ser um texto.' })
-  @IsNotEmpty({ message: 'O role é obrigatório.' })
-  role: string;
 }

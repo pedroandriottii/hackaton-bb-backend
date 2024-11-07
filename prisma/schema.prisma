@@ -13,17 +13,19 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// TODO: adicionar hint
+model Container {
+  id         String @id @default(uuid())
+  maxStorage Int
+}
 
 model Donation {
   id          String   @id @default(uuid())
-  title       String
   totalPoints Int
   user        User     @relation(fields: [userId], references: [id])
   items       Item[]
-  location    String
   userId      String
   date        DateTime
+  isFinished  Boolean  @default(false)
 }
 
 model Item {
@@ -31,10 +33,10 @@ model Item {
   title       String
   description String
   points      Int
-  user        User      @relation(fields: [userId], references: [id])
-  userId      String
+  weight      Int
   Donation    Donation? @relation(fields: [donationId], references: [id])
   donationId  String?
+  img         String?
 }
 
 enum RoleEnum {
@@ -53,5 +55,4 @@ model User {
   cep      String?
   role     RoleEnum   @default(USER)
   Donation Donation[]
-  Item     Item[]
 }

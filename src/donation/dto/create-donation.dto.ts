@@ -1,23 +1,29 @@
-import { IsDate, IsInt, IsNotEmpty, IsString } from 'class-validator';
+import {
+  IsUUID,
+  IsInt,
+  IsNotEmpty,
+  IsBoolean,
+  IsDateString,
+  IsArray,
+} from 'class-validator';
 
 export class CreateDonationDto {
-  @IsString()
+  @IsUUID()
   @IsNotEmpty()
-  title: string;
+  userId: string;
 
   @IsInt()
   @IsNotEmpty()
   totalPoints: number;
 
-  @IsString()
-  @IsNotEmpty()
-  userId: string;
+  @IsArray()
+  items: any[] = [];
 
-  @IsString()
-  @IsNotEmpty()
-  location: string;
-
-  @IsDate()
+  @IsDateString()
   @IsNotEmpty()
   date: Date;
+
+  @IsBoolean()
+  @IsNotEmpty()
+  isFinished: boolean;
 }
