@@ -15,4 +15,11 @@ export class AgencyController {
     const userLng = parseFloat(lng);
     return this.agencyService.findNearestAgencies(userLat, userLng);
   }
+
+  @Get('nearest-by-cep')
+  async getNearestAgenciesByCep(@Query('cep') cep: string) {
+    const { lat, lng } = await this.agencyService.convertCepToLatLng(cep);
+    return this.agencyService.findNearestAgencies(lat, lng);
+  }
 }
+

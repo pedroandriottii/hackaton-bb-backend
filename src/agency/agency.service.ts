@@ -10,6 +10,32 @@ const GOOGLE_MAPS_API_KEY = process.env.GOOGLE_MAPS_API_KEY;
 
 @Injectable()
 export class AgencyService {
+  async convertCepToLatLng(cep: string) {
+    try {
+      const response = await googleMapsClient.geocode({
+        params: {
+          address: cep,
+          key: GOOGLE_MAPS_API_KEY,
+          language: 'pt-BR' as Language,
+        },
+        timeout: 1000,
+      });
+
+      if (response.data.status !== 'OK' || !response.data.results.length) {
+        throw new Error(`Erro ao buscar coordenadas para o CEP: ${cep}`);
+      }
+
+      const location = response.data.results[0].geometry.location;
+      return { lat: location.lat, lng: location.lng };
+    } catch (error) {
+      console.error('Erro ao converter CEP para coordenadas:', error);
+      throw new HttpException(
+        'Erro ao converter CEP para coordenadas.',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+  
   async findNearestAgencies(userLat: number, userLng: number) {
     try {
       const response = await googleMapsClient.placesNearby({
