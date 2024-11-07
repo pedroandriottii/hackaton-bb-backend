@@ -30,27 +30,39 @@ export class AgencyService {
         );
       }
 
-      // Mapear apenas as informações mais relevantes
-      const nearestAgencies = response.data.results.map((place) => ({
-        nome: place.name,
-        endereco: place.vicinity,
-        localizacao: {
-          lat: place.geometry.location.lat,
-          lng: place.geometry.location.lng,
-        },
-        placeId: place.place_id,
-        avaliacao: place.rating || 'N/A',
-        totalAvaliacoes: place.user_ratings_total || 0,
-        abertoAgora: place.opening_hours ? place.opening_hours.open_now : 'N/A',
-      }));
+      const nearestAgencies = await Promise.all(
+        response.data.results.map(async (place) => {
+          const details = await googleMapsClient.placeDetails({
+            params: {
+              place_id: place.place_id,
+              key: GOOGLE_MAPS_API_KEY,
+              language: 'pt-BR' as Language,
+            },
+          });
+
+          const placeDetails = details.data.result;
+          return {
+            nome: place.name,
+            endereco: place.vicinity,
+            localizacao: {
+              lat: place.geometry.location.lat,
+              lng: place.geometry.location.lng,
+            },
+            placeId: place.place_id,
+            avaliacao: place.rating || 'N/A',
+            totalAvaliacoes: place.user_ratings_total || 0,
+            abertoAgora: place.opening_hours ? place.opening_hours.open_now : 'N/A',
+            horarioFuncionamento: placeDetails.opening_hours
+              ? placeDetails.opening_hours.weekday_text
+              : 'Horários não disponíveis',
+          };
+        })
+      );
 
       return nearestAgencies;
     } catch (error) {
       console.error('Erro ao buscar agências mais próximas:', error);
-      throw new HttpException(
-        'Erro ao buscar agências mais próximas.',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+      throw new HttpException('Erro ao buscar agências mais próximas.', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 }
