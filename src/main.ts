@@ -8,7 +8,7 @@ async function bootstrap() {
     allowedHeaders: '*',
     origin: '*',
     methods: '*',
-  })
+  });
 
   await app.listen(3000);
 }
