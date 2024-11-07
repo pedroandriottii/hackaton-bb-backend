@@ -3,9 +3,9 @@ import { AuthService } from './auth.service';
 import { UserDto } from 'src/users/dto/create-user.dto';
 import { AuthDto } from './dto/auth-dto';
 
-@Controller()
+@Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(private readonly authService: AuthService) { }
 
   @HttpCode(HttpStatus.OK)
   @Post('login')
