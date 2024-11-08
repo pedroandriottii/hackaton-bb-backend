@@ -12,9 +12,8 @@ import { AddItemToDonationDto } from './dto/add-item-to-donation.dto';
 
 @Injectable()
 export class DonationService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
-  // Método para criar uma nova doação vazia
   async create(createDonationDto: CreateDonationDto) {
     return this.prisma.donation.create({
       data: {
@@ -32,7 +31,6 @@ export class DonationService {
   ) {
     const { title } = addItemDto;
 
-    // Buscar o item pelo título
     const item = await this.prisma.item.findFirst({
       where: { title },
     });
@@ -41,7 +39,6 @@ export class DonationService {
       throw new HttpException('Item não encontrado', HttpStatus.NOT_FOUND);
     }
 
-    // Verificar se o item já existe na doação
     const existingDonationItem = await this.prisma.donationItem.findFirst({
       where: {
         donationId,
@@ -50,13 +47,11 @@ export class DonationService {
     });
 
     if (existingDonationItem) {
-      // Se o item já existe na doação, incrementa a quantidade
       await this.prisma.donationItem.update({
         where: { id: existingDonationItem.id },
         data: { quantity: existingDonationItem.quantity + 1 },
       });
     } else {
-      // Se o item não existe na doação, cria um novo registro em DonationItem com quantidade 1
       await this.prisma.donationItem.create({
         data: {
           donationId,
@@ -66,12 +61,11 @@ export class DonationService {
       });
     }
 
-    // Atualizar o total de pontos da doação
     const updatedDonation = await this.prisma.donation.update({
       where: { id: donationId },
       data: {
         totalPoints: {
-          increment: item.points, // Incrementa os pontos com base nos pontos do item
+          increment: item.points,
         },
       },
       include: { items: true },
@@ -93,11 +87,12 @@ export class DonationService {
     return donation;
   }
 
-  // Método para finalizar a doação
   async finalizeDonation(id: string) {
     const donation = await this.prisma.donation.findUnique({
       where: { id },
+      include: { user: true },
     });
+
     if (!donation) {
       throw new NotFoundException('Doação não encontrada');
     }
@@ -106,11 +101,26 @@ export class DonationService {
       throw new HttpException('Doação já finalizada', HttpStatus.BAD_REQUEST);
     }
 
-    return this.prisma.donation.update({
+    const user = donation.user;
+
+    if (!user) {
+      throw new NotFoundException('Usuário não encontrado para esta doação');
+    }
+
+    const updatedDonation = await this.prisma.donation.update({
       where: { id },
       data: {
         isFinished: true,
       },
     });
+
+    await this.prisma.user.update({
+      where: { id: user.id },
+      data: {
+        points: user.points + donation.totalPoints,
+      },
+    });
+
+    return updatedDonation;
   }
 }

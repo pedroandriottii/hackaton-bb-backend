@@ -10,7 +10,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   async findByEmail(email: string) {
     return await this.prisma.user.findUnique({
@@ -52,8 +52,17 @@ export class UsersService {
 
   async findOne(id: string) {
     const user = await this.prisma.user.findUnique({
-      where: {
-        id,
+      where: { id },
+      include: {
+        Donation: {
+          include: {
+            items: {
+              include: {
+                item: true,
+              },
+            },
+          },
+        },
       },
     });
 
@@ -61,7 +70,19 @@ export class UsersService {
       throw new NotFoundException('Usuário não encontrado');
     }
 
-    return user;
+    const totalWeight = user.Donation.reduce((total, donation) => {
+      return (
+        total +
+        donation.items.reduce((itemTotal, donationItem) => {
+          return itemTotal + donationItem.item.weight * donationItem.quantity;
+        }, 0)
+      );
+    }, 0);
+
+    return {
+      ...user,
+      totalWeight,
+    };
   }
 
   async remove(id: string) {
