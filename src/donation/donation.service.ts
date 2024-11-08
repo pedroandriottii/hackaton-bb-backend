@@ -90,7 +90,14 @@ export class DonationService {
   async finalizeDonation(id: string) {
     const donation = await this.prisma.donation.findUnique({
       where: { id },
-      include: { user: true },
+      include: {
+        user: true,
+        items: {
+          include: {
+            item: true,
+          },
+        },
+      },
     });
 
     if (!donation) {
@@ -107,6 +114,10 @@ export class DonationService {
       throw new NotFoundException('Usuário não encontrado para esta doação');
     }
 
+    const totalWeight = donation.items.reduce((total, donationItem) => {
+      return total + donationItem.item.weight * donationItem.quantity;
+    }, 0);
+
     const updatedDonation = await this.prisma.donation.update({
       where: { id },
       data: {
@@ -121,6 +132,9 @@ export class DonationService {
       },
     });
 
-    return updatedDonation;
+    return {
+      ...updatedDonation,
+      totalWeight,
+    };
   }
 }
