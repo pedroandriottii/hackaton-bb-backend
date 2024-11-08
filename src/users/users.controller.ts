@@ -1,8 +1,6 @@
 import {
   Controller,
   Get,
-  Body,
-  Patch,
   Param,
   Delete,
   HttpCode,
@@ -19,12 +17,10 @@ import { AuthGuard } from 'src/auth/auth.guard';
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
-  @Get(':id')
-  async findOne(@Param('id') id: string, @Req() req) {
-    if (id !== req.userid) {
-      throw new ForbiddenException('Acesso negado');
-    }
-    return await this.usersService.findOne(id);
+  @Get('me')
+  async findOne(@Req() req) {
+    console.log(req.userid);
+    return await this.usersService.findOne(req.userid);
   }
 
   // @Patch(':id')
