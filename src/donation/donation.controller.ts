@@ -9,6 +9,7 @@ import {
   Logger,
   UseGuards,
   Req,
+  Get,
 } from '@nestjs/common';
 import { DonationService } from './donation.service';
 import { CreateDonationDto } from './dto/create-donation.dto';
@@ -54,6 +55,20 @@ export class DonationController {
       Logger.error(error);
       throw new HttpException(
         'Erro ao adicionar item à doação',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  @Get(':id')
+  async getDonation(@Param('id') id: string) {
+    try {
+      const donation = await this.donationService.getDonationById(id);
+      return donation;
+    } catch (error) {
+      Logger.error(error);
+      throw new HttpException(
+        'Erro ao buscar doação',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }

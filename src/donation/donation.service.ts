@@ -80,6 +80,19 @@ export class DonationService {
     return updatedDonation;
   }
 
+  async getDonationById(id: string) {
+    const donation = await this.prisma.donation.findUnique({
+      where: { id },
+      include: { items: true },
+    });
+
+    if (!donation) {
+      throw new NotFoundException('Doação não encontrada');
+    }
+
+    return donation;
+  }
+
   // Método para finalizar a doação
   async finalizeDonation(id: string) {
     const donation = await this.prisma.donation.findUnique({

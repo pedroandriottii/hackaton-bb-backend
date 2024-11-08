@@ -21,6 +21,11 @@ export class ItemsController {
     return this.itemsService.findOne(title);
   }
 
+  @Get('id/:id')
+  findOneById(@Param('id') id: string) {
+    return this.itemsService.findOneById(id);
+  }
+
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.itemsService.remove(+id);

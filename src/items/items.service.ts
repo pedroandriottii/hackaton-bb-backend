@@ -24,6 +24,14 @@ export class ItemsService {
     });
   }
 
+  async findOneById(id: string) {
+    return await this.prisma.item.findUnique({
+      where: {
+        id,
+      },
+    });
+  }
+
   remove(id: number) {
     return `This action removes a #${id} item`;
   }
