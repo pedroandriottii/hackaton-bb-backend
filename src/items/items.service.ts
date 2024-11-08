@@ -16,8 +16,12 @@ export class ItemsService {
     return await this.prisma.item.findMany();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} item`;
+  async findOne(title: string) {
+    return await this.prisma.item.findFirst({
+      where: {
+        title,
+      },
+    });
   }
 
   remove(id: number) {

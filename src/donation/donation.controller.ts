@@ -7,19 +7,27 @@ import {
   HttpStatus,
   HttpException,
   Logger,
+  UseGuards,
+  Req,
 } from '@nestjs/common';
 import { DonationService } from './donation.service';
 import { CreateDonationDto } from './dto/create-donation.dto';
 import { AddItemToDonationDto } from './dto/add-item-to-donation.dto';
+import { AuthGuard } from 'src/auth/auth.guard';
 
+@UseGuards(AuthGuard)
 @Controller('donations')
 export class DonationController {
   constructor(private readonly donationService: DonationService) {}
 
   // Rota para criar uma doação vazia
   @Post()
-  async createDonation(@Body() createDonationDto: CreateDonationDto) {
+  async createDonation(
+    @Body() createDonationDto: CreateDonationDto,
+    @Req() req,
+  ) {
     try {
+      createDonationDto.userId = req.userid;
       const newDonation = await this.donationService.create(createDonationDto);
       return newDonation;
     } catch (error) {
