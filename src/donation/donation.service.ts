@@ -1,3 +1,5 @@
+// donation.service.ts
+
 import {
   Injectable,
   NotFoundException,
@@ -30,7 +32,7 @@ export class DonationService {
   ) {
     const { title } = addItemDto;
 
-    // Primeiro, buscar o item pelo título
+    // Buscar o item pelo título
     const item = await this.prisma.item.findFirst({
       where: { title },
     });
@@ -39,12 +41,37 @@ export class DonationService {
       throw new HttpException('Item não encontrado', HttpStatus.NOT_FOUND);
     }
 
-    // Adicionar o item à doação conectando pelo `id` do item encontrado
+    // Verificar se o item já existe na doação
+    const existingDonationItem = await this.prisma.donationItem.findFirst({
+      where: {
+        donationId,
+        itemId: item.id,
+      },
+    });
+
+    if (existingDonationItem) {
+      // Se o item já existe na doação, incrementa a quantidade
+      await this.prisma.donationItem.update({
+        where: { id: existingDonationItem.id },
+        data: { quantity: existingDonationItem.quantity + 1 },
+      });
+    } else {
+      // Se o item não existe na doação, cria um novo registro em DonationItem com quantidade 1
+      await this.prisma.donationItem.create({
+        data: {
+          donationId,
+          itemId: item.id,
+          quantity: 1,
+        },
+      });
+    }
+
+    // Atualizar o total de pontos da doação
     const updatedDonation = await this.prisma.donation.update({
       where: { id: donationId },
       data: {
-        items: {
-          connect: { id: item.id }, // Conecta usando o `id` obtido
+        totalPoints: {
+          increment: item.points, // Incrementa os pontos com base nos pontos do item
         },
       },
       include: { items: true },

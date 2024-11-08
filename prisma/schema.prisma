@@ -19,24 +19,32 @@ model Container {
 }
 
 model Donation {
-  id          String   @id @default(uuid())
+  id          String         @id @default(uuid())
   totalPoints Int
-  user        User     @relation(fields: [userId], references: [id])
-  items       Item[]
+  user        User           @relation(fields: [userId], references: [id])
+  items       DonationItem[]
   userId      String
   date        DateTime
-  isFinished  Boolean  @default(false)
+  isFinished  Boolean        @default(false)
 }
 
 model Item {
-  id          String    @id @default(uuid())
+  id          String         @id @default(uuid())
   title       String
   description String
   points      Int
   weight      Int
-  Donation    Donation? @relation(fields: [donationId], references: [id])
-  donationId  String?
+  donations   DonationItem[]
   img         String?
+}
+
+model DonationItem {
+  id         String   @id @default(uuid())
+  donation   Donation @relation(fields: [donationId], references: [id])
+  donationId String
+  item       Item     @relation(fields: [itemId], references: [id])
+  itemId     String
+  quantity   Int
 }
 
 enum RoleEnum {
